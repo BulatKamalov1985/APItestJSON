@@ -11,9 +11,21 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+        
+        let urlString = "https://www.breakingbadapi.com/api/characters"
+        guard let url = URL(string: urlString) else {return}
+
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            if let error = error{
+                print(error.localizedDescription)
+                return
+            }
+
+            guard let data = data else { return }
+
+            let jsonString = String(data: data, encoding: .utf8)
+            print(jsonString ?? "0")
+        }.resume()
     }
-
-
 }
 
