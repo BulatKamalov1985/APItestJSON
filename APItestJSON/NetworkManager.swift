@@ -28,15 +28,27 @@ class NetworkManager {
             
             do {
                 let breakinBadElements = try JSONDecoder().decode(BreakinBad.self, from: data)
-//                DispatchQueue.main.async {
+                DispatchQueue.main.async {
                     completion(breakinBadElements)
-                    print("reed")
-                print(breakinBadElements.first?.name ?? "00" )
+                    print("Распарсил епта")
+                    print(breakinBadElements.first?.name ?? "00" )}
                 
             } catch let error {
               print(error.localizedDescription)
                 print("совсем хуета")
             }
         }.resume()
+    }
+}
+
+class ImageManager {
+    static var shared = ImageManager()
+    
+    private init() {}
+    
+    func fetchImage(from url: String?) -> Data? {
+        guard let stringURL = url else { return nil }
+        guard let imageURL = URL(string: stringURL) else { return nil }
+        return try? Data(contentsOf: imageURL)
     }
 }
