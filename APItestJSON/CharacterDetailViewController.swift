@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+class CharacterDetailViewController: UIViewController {
     
     var breakinB: BreakinBadElement?
     
@@ -17,11 +17,12 @@ class ViewController: UIViewController {
     @IBOutlet weak var nickNameLabel: UILabel!
     @IBOutlet weak var occopationLabel: UILabel!
     @IBOutlet weak var statusLabel: UILabel!
-    @IBOutlet weak var birthDayLabel: UILabel!
+    @IBOutlet weak var portrayedLabel: UILabel!
     
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
     @IBOutlet weak var stackView: UIStackView!
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -36,7 +37,7 @@ class ViewController: UIViewController {
         nickNameLabel.text = breakinB?.nickname
         occopationLabel.text = breakinB?.occupation.first
         statusLabel.text = breakinB?.status
-        birthDayLabel.text = "Unknown"
+        portrayedLabel.text = breakinB?.portrayed
         uploadImageFromUrl(breakinB?.img)
     }
     
@@ -47,18 +48,16 @@ class ViewController: UIViewController {
         else {
             return
         }
-
+        
         URLSession.shared.dataTask(with: url) { [weak self] data, _, error in
             guard let data = data else {
                 return
             }
-
             DispatchQueue.main.async {
                 guard let image = UIImage(data: data) else { return }
                 self?.imageLabel.image = image
                 self?.activityIndicator.stopAnimating()
             }
-        }
-        .resume()
+        }.resume()
     }
 }

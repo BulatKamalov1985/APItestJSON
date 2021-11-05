@@ -11,10 +11,12 @@ class MainTableViewController: UITableViewController {
     
     var breakingBads: BreakinBad = []
     
-        override func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
-            
+        
         tableView.backgroundColor = .systemYellow
+        navigationItem.rightBarButtonItem = editButtonItem
+        
         NetworkManager.shared.fetchCharacter(from: URLS.urlString.rawValue) { breakinBadResult in
             guard let breakinBad = breakinBadResult else { return }
             self.breakingBads = breakinBad
@@ -33,24 +35,45 @@ class MainTableViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
         let breakinBad = breakingBads[indexPath.row]
-        cell.textLabel?.text = breakinBad.name
-        cell.detailTextLabel?.text = breakinBad.nickname
+        
+        var content = cell.defaultContentConfiguration()
+        
+        content.text = breakinBad.name
+        content.secondaryText = breakinBad.nickname
+        content.image = nil
         cell.imageView?.image = nil
-        //        uploadImageFromUrl(breakinBad.img, indexPath: indexPath)
+        cell.contentConfiguration = content
+        
+        uploadImageFromUrl(breakinBad.img, indexPath: indexPath)
         
         return cell
     }
+    //    MARK: - Table view delegate
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        performSegue(withIdentifier: "show", sender: self)
+        tableView.deselectRow(at: indexPath, animated: true)
+    }
+    
+    override func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
+        .none
+    }
+    override func tableView(_ tableView: UITableView, shouldIndentWhileEditingRowAt indexPath: IndexPath) -> Bool {
+        false
+    }
+    
+    override func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
+        let currentCharacter = breakingBads.remove(at: sourceIndexPath.row)
+        breakingBads.insert(currentCharacter, at: destinationIndexPath.row)
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let destenation = segue.destination as? ViewController {
-            destenation.breakinB = breakingBads[tableView.indexPathForSelectedRow?.row ?? 0]
-        }
+        guard let characterDetailVC = segue.destination as? CharacterDetailViewController else {return}
+        guard let indexPath = tableView.indexPathForSelectedRow else { return }
+        let characterDetail = breakingBads[indexPath.row]
+        characterDetailVC.breakinB = characterDetail
     }
     
     func uploadImageFromUrl(_ stringUrl: String?, indexPath: IndexPath) {
@@ -68,11 +91,9 @@ class MainTableViewController: UITableViewController {
             
             DispatchQueue.main.async {
                 guard let image = UIImage(data: data) else { return }
-                
                 let cell = self?.tableView.cellForRow(at: indexPath)
                 cell?.imageView?.image = image
             }
-        }
-        .resume()
+        }.resume()
     }
 }

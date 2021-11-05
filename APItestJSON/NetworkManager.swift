@@ -9,18 +9,18 @@ import Foundation
 
 class NetworkManager {
     
-
+    
     static let shared = NetworkManager()
     
     private init() {}
     
     func fetchCharacter(from url: String?, with completion: @escaping(BreakinBad?) -> Void) {
         guard let url = URL(string: url ?? "0" ) else { return }
-
+        
         URLSession.shared.dataTask(with: url) { data, _, error in
             if let error = error{
                 print(error)
-                  print("Хуета")
+                print("Ищи ошибку")
                 return
             }
             
@@ -30,12 +30,12 @@ class NetworkManager {
                 let breakinBadElements = try JSONDecoder().decode(BreakinBad.self, from: data)
                 DispatchQueue.main.async {
                     completion(breakinBadElements)
-                    print("Распарсил епта")
+                    print("Распарсил")
                     print(breakinBadElements.first?.name ?? "00" )}
                 
             } catch let error {
-              print(error.localizedDescription)
-                print("совсем хуета")
+                print(error.localizedDescription)
+                print("Чтото пошло не так")
             }
         }.resume()
     }
