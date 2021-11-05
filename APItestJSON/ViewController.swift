@@ -8,24 +8,57 @@
 import UIKit
 
 class ViewController: UIViewController {
-
+    
+    var breakinB: BreakinBadElement?
+    
+    @IBOutlet weak var imageLabel: UIImageView!
+    
+    @IBOutlet weak var nameLabel: UILabel!
+    @IBOutlet weak var nickNameLabel: UILabel!
+    @IBOutlet weak var occopationLabel: UILabel!
+    @IBOutlet weak var statusLabel: UILabel!
+    @IBOutlet weak var birthDayLabel: UILabel!
+    
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
+    
+    @IBOutlet weak var stackView: UIStackView!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let urlString = "https://www.breakingbadapi.com/api/characters"
-        guard let url = URL(string: urlString) else {return}
+        activityIndicator.startAnimating()
+        activityIndicator.hidesWhenStopped = true
+        
+        stackView.layer.masksToBounds = true
+        stackView.layer.cornerRadius = 5
+        
+        nameLabel.text = breakinB?.name
+        nickNameLabel.text = breakinB?.nickname
+        occopationLabel.text = breakinB?.occupation.first
+        statusLabel.text = breakinB?.status
+        birthDayLabel.text = "Unknown"
+        uploadImageFromUrl(breakinB?.img)
+    }
+    
+    func uploadImageFromUrl(_ stringUrl: String?) {
+        guard
+            let stringUrl = stringUrl,
+            let url = URL(string: stringUrl)
+        else {
+            return
+        }
 
-        URLSession.shared.dataTask(with: url) { data, response, error in
-            if let error = error{
-                print(error.localizedDescription)
+        URLSession.shared.dataTask(with: url) { [weak self] data, _, error in
+            guard let data = data else {
                 return
             }
 
-            guard let data = data else { return }
-
-            let jsonString = String(data: data, encoding: .utf8)
-            print(jsonString ?? "0")
-        }.resume()
+            DispatchQueue.main.async {
+                guard let image = UIImage(data: data) else { return }
+                self?.imageLabel.image = image
+                self?.activityIndicator.stopAnimating()
+            }
+        }
+        .resume()
     }
 }
-

@@ -11,10 +11,10 @@ import Foundation
 struct BreakinBadElement: Codable {
     let charID: Int?
     let name: String?
-    let birthday: Birthday?
+    let birthday: Birthday
     let occupation: [String]
-    let img: String?
-    let status: Status?
+    var img: String?
+    let status: String?
     let nickname: String?
     let appearance: [Int]?
     let portrayed: String?
@@ -50,3 +50,9 @@ enum Status: String, Codable {
 }
 
 typealias BreakinBad = [BreakinBadElement]
+
+enum URLS: String {
+    case urlString = "https://www.breakingbadapi.com/api/characters"
+
+}
+
